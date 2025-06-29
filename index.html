@@ -1,7 +1,51 @@
-<video id="video" autoplay playsinline></video>
-<script>
-  navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-    .then(stream => {
-      document.getElementById('video').srcObject = stream;
-    });
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>📹 Kamera Stream – Sender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin:0; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; color:#fff; }
+    video { width:90%; max-width:600px; border:2px solid #fff; }
+    textarea { width:90%; height:100px; margin-top:10px; }
+    button { margin:5px; padding:10px; font-size:1rem; }
+  </style>
+</head>
+<body>
+  <h2>📷 Kamera stream (Sender)</h2>
+  <video id="video" autoplay playsinline></video>
+  <div>
+    <button id="start">🎥 Kamera och va Offer yarat</button>
+    <button id="recvAnswer">✉️ Answer joylash</button>
+  </div>
+  <textarea id="offerBox" placeholder="Offer SDP shu yerda chiqadi…" readonly></textarea>
+  <textarea id="answerBox" placeholder="Receiver yuborgan Answer SDP ni shu yerga qo‘y…"></textarea>
+
+  <script>
+    const pc = new RTCPeerConnection();
+    const video = document.getElementById('video');
+    const offerBox = document.getElementById('offerBox');
+    const answerBox = document.getElementById('answerBox');
+
+    document.getElementById('start').onclick = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ video:true, audio:false });
+      video.srcObject = stream;
+      stream.getTracks().forEach(t => pc.addTrack(t, stream));
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      offerBox.value = JSON.stringify(pc.localDescription);
+      alert('✅ Offer tayyor! Nusxa olib Receiver ga yubor.');
+    };
+
+    document.getElementById('recvAnswer').onclick = async () => {
+      try {
+        const answer = JSON.parse(answerBox.value.trim());
+        await pc.setRemoteDescription(answer);
+        alert('✅ Answer o‘rnatildi. Stream boshlandi.');
+      } catch(e) {
+        alert('❌ Xatolik: Answer JSON formatida bo‘lishi kerak.');
+      }
+    };
+  </script>
+</body>
+</html>
