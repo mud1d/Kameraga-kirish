@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Abdulbosit kamerasi</title>
-  </head>
-  <body>
-    <h1>📸 Kamera ochildi!</h1>
-    <video id="video" autoplay playsinline width="100%" style="max-width: 480px;"></video>
-    <script>
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => document.getElementById('video').srcObject = stream)
-        .catch(err => alert("❌ Ruxsat bermadingiz: " + err.message));
-    </script>
-  </body>
-</html>
+<video id="video" autoplay playsinline></video>
+<script>
+  navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    .then(stream => {
+      document.getElementById('video').srcObject = stream;
+    });
+</script>
